@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { db } from "../../infra/db/client";
 import { UserModels } from "./model";
 import { UserService } from "./service";
-import { authGuard } from "../../plugins/better-auth.plugin";
+import { authGuard, withAuth } from "../../plugins/better-auth.plugin";
 
 /**
  * User Module
@@ -16,7 +16,7 @@ export const UserModule = new Elysia({
 })
   // Use reference models
   .use(UserModels)
-  
+
   // All routes below require authentication
   .use(authGuard)
 
@@ -26,12 +26,12 @@ export const UserModule = new Elysia({
    */
   .get(
     "/me",
-    async ({ user }: any) => {
+    withAuth(({ user }) => {
       return {
         success: true,
         data: user,
       };
-    },
+    }),
     {
       detail: {
         summary: "Get current user",
@@ -80,7 +80,7 @@ export const UserModule = new Elysia({
    */
   .patch(
     "/me",
-    async ({ user, body, set }: any) => {
+    withAuth(async ({ user, body, set }) => {
       try {
         const updatedUser = await UserService.updateById(db, user.id, body);
 
@@ -104,7 +104,7 @@ export const UserModule = new Elysia({
           message: error instanceof Error ? error.message : "Unknown error",
         };
       }
-    },
+    }),
     {
       body: "user.update",
       detail: {
@@ -128,7 +128,7 @@ export const UserModule = new Elysia({
    */
   .delete(
     "/:id",
-    async ({ user, params, set }: any) => {
+    withAuth(async ({ user, params, set }) => {
       // Users can only delete themselves
       if (user.id !== params.id) {
         set.status = 403;
@@ -153,7 +153,7 @@ export const UserModule = new Elysia({
         success: true,
         data: deletedUser,
       };
-    },
+    }),
     {
       detail: {
         summary: "Delete user",
