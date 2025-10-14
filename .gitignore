@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+bun.lockb
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.db-journal
+
+# Test
+coverage/
