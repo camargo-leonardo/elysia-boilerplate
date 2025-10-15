@@ -4,7 +4,7 @@ import { Elysia, t } from "elysia";
  * Health Module
  * Following Elysia best practices: Elysia instance IS the controller
  */
-export const HealthModule = new Elysia({
+export const HealthController = new Elysia({
   name: "Health.Module",
   prefix: "/health",
   tags: ["Health"],

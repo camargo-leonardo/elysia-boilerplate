@@ -1,9 +1,9 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
-import { UserModule } from "./modules/user";
 import { auth, OpenAPI } from "./infra/auth";
-import { HealthModule } from "./modules/health";
+import { UserController } from "./modules/user/user.controller";
+import { HealthController } from "./modules/health/health.controller";
 
 /**
  * Create and configure Elysia app
@@ -66,10 +66,12 @@ export async function createApp() {
         console.log(`${request.method} ${new URL(request.url).pathname}`);
     })
 
-    // Register all modules using .use() - Feature-based architecture
+    // Mount auth routes at /auth
     .mount("/auth", auth.handler)
-    .use(HealthModule)
-    .use(UserModule);
+
+    // Register all modules using .use() - Feature-based architecture
+    .use(HealthController)
+    .use(UserController);
 
   return app;
 }

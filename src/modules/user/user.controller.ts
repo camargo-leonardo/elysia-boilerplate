@@ -1,7 +1,6 @@
 import { Elysia } from "elysia";
-import { db } from "../../infra/db/client";
-import { UserModels } from "./model";
-import { UserService } from "./service";
+import { UserModels } from "./user.model";
+import { UserService } from "./user.service";
 import { authGuard, withAuth } from "../../plugins/better-auth.plugin";
 
 /**
@@ -9,7 +8,7 @@ import { authGuard, withAuth } from "../../plugins/better-auth.plugin";
  * Following Elysia best practices: Elysia instance IS the controller
  * No separate controller classes
  */
-export const UserModule = new Elysia({
+export const UserController = new Elysia({
   name: "User.Module",
   prefix: "/users",
   tags: ["Users"],
@@ -53,7 +52,7 @@ export const UserModule = new Elysia({
   .get(
     "/",
     async () => {
-      const allUsers = await UserService.findAll(db);
+      const allUsers = await UserService.findAll();
 
       return {
         success: true,
@@ -82,7 +81,7 @@ export const UserModule = new Elysia({
     "/me",
     withAuth(async ({ user, body, set }) => {
       try {
-        const updatedUser = await UserService.updateById(db, user.id, body);
+        const updatedUser = await UserService.updateById(user.id, body);
 
         if (!updatedUser) {
           set.status = 404;
@@ -139,7 +138,7 @@ export const UserModule = new Elysia({
         };
       }
 
-      const deletedUser = await UserService.deleteById(db, params.id);
+      const deletedUser = await UserService.deleteById(params.id);
 
       if (!deletedUser) {
         set.status = 404;

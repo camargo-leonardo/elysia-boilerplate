@@ -1,17 +1,16 @@
 import { eq } from "drizzle-orm";
-import type { UpdateUserData } from "./model";
-import { users } from "../../infra/db/schema";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { db } from "@/infra/db/client";
+import type { UpdateUserData } from "./user.model";
+import { User, users } from "../../infra/db/schema";
 
 /**
- * User Service
- * Following Elysia best practices: Static class for non-request-dependent logic
+ * User Repository
  */
-export abstract class UserService {
+export abstract class UserRepository {
   /**
    * Find user by ID
    */
-  static async findById(db: PostgresJsDatabase<any>, id: string) {
+  static async findById(id: string): Promise<User | null> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     if (!user) return null;
     return user;
@@ -20,7 +19,7 @@ export abstract class UserService {
   /**
    * Find all users
    */
-  static async findAll(db: PostgresJsDatabase<any>) {
+  static async findAll(): Promise<User[]> {
     return await db.select().from(users);
   }
 
@@ -28,10 +27,9 @@ export abstract class UserService {
    * Update user by ID
    */
   static async updateById(
-    db: PostgresJsDatabase<any>,
     id: string,
     data: UpdateUserData
-  ) {
+  ): Promise<User | undefined> {
     const [updatedUser] = await db
       .update(users)
       .set({
@@ -47,7 +45,7 @@ export abstract class UserService {
   /**
    * Delete user by ID
    */
-  static async deleteById(db: PostgresJsDatabase<any>, id: string) {
+  static async deleteById(id: string): Promise<User | undefined> {
     const [deletedUser] = await db
       .delete(users)
       .where(eq(users.id, id))
