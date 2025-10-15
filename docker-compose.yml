@@ -39,18 +39,5 @@ services:
       - ./src:/app/src
     command: bun run dev
 
-  migrations:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: myapp_migrations
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/myapp
-    depends_on:
-      postgres:
-        condition: service_healthy
-    command: bun run migrate:apply
-    restart: "no"
-
 volumes:
   postgres_data:
